@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FollowedUserController;
+use App\Http\Controllers\TweetController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,3 +29,5 @@ Route::post('register', [UserController::class, 'store'])->name('register');
 
 Route::post('follow-user', [FollowedUserController::class, 'store']);
 Route::post('unfollow-user', [FollowedUserController::class, 'unfollow']);
+
+Route::resource('tweets', TweetController::class);
