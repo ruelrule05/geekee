@@ -34,4 +34,4 @@ Route::get('followed-user/suggested', [FollowedUserController::class, 'suggested
 Route::get('followed-user/{followedUser}', [FollowedUserController::class, 'show']);
 Route::get('followed-user/{followedUser}/tweets', [FollowedUserController::class, 'tweets']);
 
-Route::resource('tweets', TweetController::class);
+Route::resource('tweets', TweetController::class)->except(['index', 'create', 'edit']);
