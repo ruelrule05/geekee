@@ -7,6 +7,8 @@ use App\Models\FollowedUser;
 use Illuminate\Http\Request;
 use App\Http\Requests\FollowUserRequest;
 use App\Http\Requests\UnfollowUserRequest;
+use Error;
+use Exception;
 
 class FollowedUserController extends Controller
 {
@@ -90,7 +92,14 @@ class FollowedUserController extends Controller
      */
     public function show(FollowedUser $followedUser)
     {
-        //
+        if (request()->user()->id == $followedUser->user_id)
+        {
+            return response()->json([
+                'user'  =>  $followedUser->load('followedUser')
+            ]);
+        } else {
+            return throw new Error('You are not currently following this person.');
+        }
     }
 
     /**
@@ -160,5 +169,30 @@ class FollowedUserController extends Controller
                 'message'           =>  'Cannot unfollow a user that you are not yet following.'
             ]);
         }
+    }
+
+    public function tweets(Request $request, FollowedUser $followedUser)
+    {
+        if (request()->user()->id == $followedUser->user_id)
+        {
+            return response()->json([
+                'user'  =>  $followedUser->followedUser->tweets
+            ]);
+        } else {
+            return throw new Error('You are not currently following this person.');
+        }
+    }
+
+    public function suggested(Request $request)
+    {
+        $followedUsers = FollowedUser::where('user_id', $request->user()->id)->pluck('followed_user_id');
+
+        $users = User::whereNotIn('id', $followedUsers)
+                        ->whereNot('id', $request->user()->id)
+                        ->paginate(5);
+
+        return response()->json([
+            'suggested' =>  $users
+        ]);
     }
 }
