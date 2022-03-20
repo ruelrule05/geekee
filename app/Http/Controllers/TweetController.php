@@ -6,6 +6,7 @@ use App\Models\Tweet;
 use Illuminate\Http\Request;
 use App\Http\Requests\AddTweetRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UpdateTweetRequest;
 
 class TweetController extends Controller
 {
@@ -110,9 +111,21 @@ class TweetController extends Controller
      * @param  \App\Models\Tweet  $tweet
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Tweet $tweet)
+    public function update(UpdateTweetRequest $request, Tweet $tweet)
     {
-        //
+        if ($tweet->update([
+            'content'   =>  $request->content
+        ])) {
+            return response()->json([
+                'success'       =>  true,
+                'message'       =>  'Tweet updated.'
+            ]);
+        } else {
+            return response()->json([
+                'success'       =>  false,
+                'message'       =>  'Failed to update tweet.'
+            ]);
+        }
     }
 
     /**
