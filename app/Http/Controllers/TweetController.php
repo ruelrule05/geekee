@@ -57,7 +57,7 @@ class TweetController extends Controller
                 'tweet-attachments', $filename . '-' . time() . '.' . $extension, 'public'
             );
 
-            $tweet->attachment_url = config('app.url') . 'storage/' . $path;
+            $tweet->attachment_url = $path;
         } catch (\Exception $e) {
             return response()->json([
                 'success'       =>  false,
@@ -67,6 +67,8 @@ class TweetController extends Controller
 
         if ($tweet->save())
         {
+            $tweet->attachment_url = config('app.url') . 'storage/' . $tweet->attachment_url;
+
             return response()->json([
                 'success'       =>  true,
                 'message'       =>  'Tweet saved.',
@@ -136,6 +138,27 @@ class TweetController extends Controller
      */
     public function destroy(Tweet $tweet)
     {
-        //
+        if ($tweet->user_id == request()->user()->id)
+        {
+            if ($tweet->delete())
+            {
+                Storage::disk('public')->delete($tweet->attachment_url);
+
+                return response()->json([
+                    'success'       =>  true,
+                    'message'       =>  'Tweet deleted.'
+                ]);
+            } else {
+                return response()->json([
+                    'success'       =>  false,
+                    'message'       =>  'Failed to delete tweet.'
+                ]);
+            }
+        } else {
+            return response()->json([
+                'success'           =>  false,
+                'message'           =>  'You cannot delete another user\'s tweet.'
+            ]);
+        }
     }
 }
