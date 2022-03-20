@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\FollowedUser;
 use Illuminate\Http\Request;
 use App\Http\Requests\FollowUserRequest;
+use App\Http\Requests\UnfollowUserRequest;
 
 class FollowedUserController extends Controller
 {
@@ -123,6 +124,41 @@ class FollowedUserController extends Controller
      */
     public function destroy(FollowedUser $followedUser)
     {
-        //
+        
+    }
+    
+    /**
+     * unfollow
+     *
+     * @param  mixed $request
+     * @return void
+     */
+    public function unfollow(UnfollowUserRequest $request)
+    {
+        $followedUser = FollowedUser::where('user_id', $request->user()->id)
+                                    ->where('followed_user_id', $request->followed_user_id)
+                                    ->with('followedUser')
+                                    ->first();
+
+        if ($followedUser)
+        {
+            if ($followedUser->delete())
+            {
+                return response()->json([
+                    'success'       =>  true,
+                    'message'       =>  'You have unfollowed ' . $followedUser->followedUser->name
+                ]);
+            } else {
+                return response()->json([
+                    'success'       =>  false,
+                    'message'       =>  'Unable to unfollow user.'
+                ]);
+            }
+        } else {
+            return response()->json([
+                'success'           =>  false,
+                'message'           =>  'Cannot unfollow a user that you are not yet following.'
+            ]);
+        }
     }
 }

@@ -27,3 +27,4 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::post('register', [UserController::class, 'store'])->name('register');
 
 Route::post('follow-user', [FollowedUserController::class, 'store']);
+Route::post('unfollow-user', [FollowedUserController::class, 'unfollow']);
