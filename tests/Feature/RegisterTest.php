@@ -18,15 +18,17 @@ class RegisterTest extends TestCase
      */
     public function test_example()
     {
-        // $response = $this->get('/api/register');
-
-        $response = $this->call('POST', '/api/register', [
+        $response = $this->postJson('/api/register', [
             'name'                  =>  'Ruel Rule',
             'email'                 =>  'ruelrule05@gmail.com',
             'password'              =>  '123Password_',
             'password_confirmation' =>  '123Password_'
         ]);
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+                    ->assertJson([
+                        'success'   =>  true,
+                        'message'   =>  'A new account has been registered.'
+                    ]);
     }
 }
